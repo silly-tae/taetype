@@ -1,6 +1,6 @@
 [package]
 name = "taetype"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A font engine in Rust/WASM: decode, instance, subset, and shape TTF, OTF, TTC, and WOFF2"
 license = "MIT"
