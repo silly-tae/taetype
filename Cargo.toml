@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/silly-tae/taetype"
 keywords = ["font", "opentype", "woff2", "variable-fonts", "wasm"]
 categories = ["text-processing", "wasm"]
-exclude = ["pkg/", "tasks/"]
+exclude = ["pkg/", "tasks/", ".gitignore"]
 
 [lib]
 path = "src/lib/lib.rs"
