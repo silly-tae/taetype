@@ -137,14 +137,14 @@ get_colr_layers(font_name, style, gid): Uint32Array
 
 ## End-to-end example
 
-Installed via `npm i taetype`, import the bare specifier `taetype` – `exports` in `package.json` routes browsers/bundlers to the `web` build and Node.js to the `node` build automatically, same import either way. Building from source instead? Swap `taetype` for `./pkg/web/taetype.js` or `./pkg/node/taetype.js` (see [Building](#building)).
+Examples below import the bare specifier `taetype` (`npm i taetype`) – `exports` in `package.json` routes browsers/bundlers to the `web` build and Node.js to the `node` build automatically, same import either way. Building from source instead? Swap `taetype` for `./pkg/web/taetype.js` or `./pkg/node/taetype.js` (see [Building](#building)).
 
 ### Browser
 
 TTF/OTF, the simplest path:
 
 ```js
-import init, { register_font_raw, shape_text, subset_font_full } from './pkg/web/taetype.js';
+import init, { register_font_raw, shape_text, subset_font_full } from 'taetype';
 
 await init();
 
@@ -158,7 +158,7 @@ const subset = subset_font_full('MyFont', 'normal', 400, 0, shaped.glyphs);
 WOFF2, decompressing the Brotli stream yourself first:
 
 ```js
-import init, { get_compressed_range, decompress_brotli, register_font, shape_text } from './pkg/web/taetype.js';
+import init, { get_compressed_range, decompress_brotli, register_font, shape_text } from 'taetype';
 
 await init();
 
@@ -175,7 +175,7 @@ const shaped = shape_text('Hello, world', 'MyFont', 'normal', 400, 0, false);
 No `init()` step – requiring the module loads the WASM synchronously:
 
 ```js
-const { register_font_raw, shape_text, subset_font_full } = require('./pkg/node/taetype.js');
+const { register_font_raw, shape_text, subset_font_full } = require('taetype');
 const fs = require('fs');
 
 const fontBytes = fs.readFileSync('MyFont.ttf');
