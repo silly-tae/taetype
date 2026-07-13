@@ -1,0 +1,32 @@
+[package]
+name = "taetype"
+version = "0.1.1"
+edition = "2021"
+description = "A font engine in Rust/WASM: decode, instance, subset, and shape TTF, OTF, TTC, and WOFF2"
+license = "MIT"
+repository = "https://github.com/silly-tae/taetype"
+keywords = ["font", "opentype", "woff2", "variable-fonts", "wasm"]
+categories = ["text-processing", "wasm"]
+exclude = ["pkg/", "tasks/"]
+
+[lib]
+path = "src/lib/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+rustybuzz = "0.20.1"
+brotli-decompressor = "5.0.3"
+
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O4", "--all-features"]
+
+[profile.release]
+opt-level = 3
+lto = true
+panic = "abort"
+codegen-units = 1
+overflow-checks = false
+strip = true
