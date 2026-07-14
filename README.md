@@ -14,6 +14,61 @@ cargo add taetype
 
 ---
 
+## Examples
+
+Real output from taetype's own APIs, not mockups – see `scripts/gen-images/` to
+reproduce any of these numbers yourself.
+
+### Subsetting
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/01-subsetting-dark.png">
+  <img src="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/01-subsetting-light.png" alt="Inter variable font subset to one paragraph's glyphs: 859 KB to 3 KB, a 99.6% reduction, using 27 of 2,937 glyphs.">
+</picture>
+
+`register_font_raw` → `shape_text` → `subset_font_full` on [Inter](https://github.com/rsms/inter)
+(SIL OFL 1.1) against one real body paragraph. Numbers come straight out of
+`subset_font_full`'s returned `fontBytes.length` – reproduce with
+`node scripts/gen-images/01-subsetting-measure.js && node scripts/gen-images/01-subsetting-render.js`.
+
+### Variable font instancing
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/02-instancing-dark.png">
+  <img src="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/02-instancing-light.png" alt="Inter variable font instanced at five weights (100, 300, 400, 700, 900) at optical size 32, from hairline to black.">
+</picture>
+
+Five separate `subset_font_full` calls against the same registered variable font,
+one per weight – each column is a real static instance, not a CSS `font-weight`
+approximation of a single file. Reproduce with
+`node scripts/gen-images/02-instancing-build.js && node scripts/gen-images/02-instancing-render.js`.
+
+### Color glyphs
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/03-color-dark.png">
+  <img src="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/03-color-light.png" alt="Six colorful emoji glyphs (grinning face, fire, rainbow, party popper, pizza, artist palette) rendered from Noto Color Emoji's real CBDT bitmap strikes.">
+</picture>
+
+Each image is `get_glyph_bitmap`'s actual return value on [Noto Color
+Emoji](https://github.com/googlefonts/noto-emoji) (SIL OFL 1.1, CBDT/CBLC format) –
+a real PNG strike pulled out of the font, drawn with zero compositing. Reproduce with
+`node scripts/gen-images/03-color-build.js && node scripts/gen-images/03-color-render.js`.
+
+### Shaping
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/04-shaping-dark.png">
+  <img src="https://raw.githubusercontent.com/silly-tae/taetype/v0.1.3/assets/images/04-shaping-light.png" alt="The word office in EB Garamond, unshaped (six separate letters) versus shape_text() output (four glyphs, with f-f-i fused into one real ffi ligature).">
+</picture>
+
+Every glyph above is drawn individually at `shape_text`'s own real advances – not
+the browser reshaping a real font on its own, which would only prove the *font*
+has ligatures, not that taetype computed them. Reproduce with
+`node scripts/gen-images/04-shaping-build.js && node scripts/gen-images/04-shaping-render.js`.
+
+---
+
 ## What it does
 
 - **Decode** – TTF, OTF, and TTC (font collections). Reads the full table directory, not a fixed allowlist, so nothing in the source font gets dropped.

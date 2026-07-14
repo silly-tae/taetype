@@ -294,6 +294,20 @@ pub fn subset_cff(cff: &[u8], requested: &[u16]) -> Result<SubsetResult, String>
     Ok(SubsetResult { ttf: out, gid_map: vec![] })
 }
 
+// post's version 2.0 payload (glyphNameIndex, sized to the ORIGINAL glyph
+// count) would silently disagree with the subset's maxp.numGlyphs if copied
+// verbatim — downgrading to version 3.0 keeps the shared 32-byte header
+// (italicAngle, underline metrics, isFixedPitch) that PDF viewers and browsers
+// actually read, while dropping the only part that can no longer be correct
+// post-subset. Every post version shares that header layout, so this is safe
+// regardless of the source table's version.
+fn fix_post_table(mut post: Vec<u8>) -> Vec<u8> {
+    if post.len() < 32 { return post; }
+    post.truncate(32);
+    write_u32_be(&mut post, 0, 0x0003_0000);
+    post
+}
+
 pub fn subset_ttf(ttf: &[u8], requested: &[u16]) -> Result<SubsetResult, String> {
     let dir = parse_ttf_dir(ttf);
 
@@ -430,10 +444,14 @@ pub fn subset_ttf(ttf: &[u8], requested: &[u16]) -> Result<SubsetResult, String>
     let mut tmap: HashMap<String, Vec<u8>> = HashMap::new();
     if let Some(d) = owned_table(ttf, &dir, "OS/2") { tmap.insert("OS/2".to_string(), d); }
     // glyphs keep their TrueType instructions, which call into fpgm/prep and read
-    // cvt — dropping those leaves dangling references that strict rasterizers
-    // reject; post carries metadata PDF viewers expect on embedded TrueType
-    for tag in ["cvt ", "fpgm", "prep", "post"] {
+    // cvt — dropping those leaves dangling references that strict rasterizers reject
+    for tag in ["cvt ", "fpgm", "prep"] {
         if let Some(d) = owned_table(ttf, &dir, tag) { tmap.insert(tag.to_string(), d); }
+    }
+    // post carries metadata PDF viewers expect on embedded TrueType — see
+    // fix_post_table for why it can't be copied verbatim like the tables above
+    if let Some(post) = owned_table(ttf, &dir, "post") {
+        tmap.insert("post".to_string(), fix_post_table(post));
     }
     tmap.insert("maxp".to_string(), new_maxp);
     tmap.insert("hmtx".to_string(), new_hmtx);

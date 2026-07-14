@@ -1,0 +1,10 @@
+{
+  "name": "taetype-gen-images",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Generates the README example images for taetype. Not published.",
+  "type": "commonjs",
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}
